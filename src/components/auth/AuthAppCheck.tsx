@@ -5,11 +5,12 @@ import {
   Routes,
 } from 'react-router-dom'
 import Login from '../../pages/auth/Login'
-import Home from '../../Home'
+import Home from '../../pages/Home'
 import { useContext } from 'react'
 import { UserContext } from '../../contexts'
 import MainLayout from '../../MainLayout'
 import { Loader2 } from 'lucide-react'
+import NotFound from '@/pages/NotFound'
 
 const AuthAppCheck = () => {
   const { authenticated, isLoading } = useContext(UserContext)
@@ -21,32 +22,24 @@ const AuthAppCheck = () => {
     )
   }
   if (!authenticated) {
-    return <PublicAppRouter />
+    return (
+      <Router>
+        <Routes>
+          <Route path="/login" Component={Login} />
+          <Route path="*" element={<Navigate to={'/login'} />} />
+        </Routes>
+      </Router>
+    )
   }
   return (
-    <MainLayout>
-      <AuthAppRouter />
-    </MainLayout>
-  )
-}
-
-const AuthAppRouter = () => {
-  return (
     <Router>
-      <Routes>
-        <Route path="/" Component={Home} />
-        <Route path="/login" element={<Navigate to={'/'} />} />
-      </Routes>
-    </Router>
-  )
-}
-const PublicAppRouter = () => {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/login" Component={Login} />
-        <Route path="*" element={<Navigate to={'/login'} />} />
-      </Routes>
+      <MainLayout>
+        <Routes>
+          <Route path="/" Component={Home} />
+          <Route path="/login" element={<Navigate to={'/'} />} />
+          <Route path="*" Component={NotFound} />
+        </Routes>
+      </MainLayout>
     </Router>
   )
 }
