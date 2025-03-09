@@ -30,7 +30,6 @@ export const UserContextProvider = ({
   }
 
   if (userData && userData.authenticated) {
-    console.log()
     userContextValue = {
       ...userData,
       isLoading,
