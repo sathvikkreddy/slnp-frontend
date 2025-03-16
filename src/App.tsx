@@ -3,6 +3,8 @@ import { UserContextProvider } from './contexts/UserContext'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import AuthAppCheck from './components/auth/AuthAppCheck'
 import { BreadcrumbContextProvider } from './contexts/BreadcrumbContext'
+import { TooltipProvider } from './components/ui/tooltip'
+import { Toaster } from './components/ui/sonner'
 
 function App() {
   const queryClient = new QueryClient()
@@ -10,10 +12,13 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <UserContextProvider>
-        <BreadcrumbContextProvider>
-          <AuthAppCheck />
-        </BreadcrumbContextProvider>
+        <TooltipProvider>
+          <BreadcrumbContextProvider>
+            <AuthAppCheck />
+          </BreadcrumbContextProvider>
+        </TooltipProvider>
       </UserContextProvider>
+      <Toaster />
       <ReactQueryDevtools initialIsOpen={true} />
     </QueryClientProvider>
   )

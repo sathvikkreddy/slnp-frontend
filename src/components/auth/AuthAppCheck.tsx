@@ -11,6 +11,7 @@ import { UserContext } from '../../contexts'
 import MainLayout from '../../MainLayout'
 import { Loader2 } from 'lucide-react'
 import NotFound from '@/pages/NotFound'
+import Invoice from '@/pages/Invoice'
 
 const AuthAppCheck = () => {
   const { authenticated, isLoading } = useContext(UserContext)
@@ -37,6 +38,7 @@ const AuthAppCheck = () => {
         <Routes>
           <Route path="/" Component={Home} />
           <Route path="/login" element={<Navigate to={'/'} />} />
+          <Route path="/invoices/:invoiceId" Component={Invoice} />
           <Route path="*" Component={NotFound} />
         </Routes>
       </MainLayout>
