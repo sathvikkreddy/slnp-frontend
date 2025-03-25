@@ -17,7 +17,6 @@ export const fetchMe = async () => {
     if (res.status !== 200) {
       return { authenticated: false, user: null }
     }
-    console.log(res.data)
     return {
       authenticated: true,
       user: { username: res.data.username, email: res.data.email },

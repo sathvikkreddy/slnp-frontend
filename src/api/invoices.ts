@@ -19,13 +19,37 @@ export const getInvoices = async () => {
 export const getInvoice = async (invoiceId: string) => {
   const slnp_jwt = localStorage.getItem('slnp_jwt')
   if (!slnp_jwt) return null
+
   try {
-    const response = await api.get(`/api/invoices/${invoiceId}?populate=*`, {
-      headers: { Authorization: `Bearer ${slnp_jwt}` },
-    })
+    const response = await api.get(
+      `/api/invoices/${invoiceId}?populate[items]=*&populate[bill_to_company][populate]=address&populate[ship_to_company][populate]=address`,
+      {
+        headers: { Authorization: `Bearer ${slnp_jwt}` },
+      }
+    )
+
     return response.data.data as Invoice
   } catch (error) {
     console.error('Error fetching invoice:', error)
+    return null
+  }
+}
+
+export const getInvoicesByCompany = async (companyId: number) => {
+  const slnp_jwt = localStorage.getItem('slnp_jwt')
+  if (!slnp_jwt) return null
+
+  try {
+    const response = await api.get(
+      `/api/invoices?filters[bill_to_company][id][$eq]=${companyId}&populate[items]=*&populate[bill_to_company][populate]=address&populate[ship_to_company][populate]=address`,
+      {
+        headers: { Authorization: `Bearer ${slnp_jwt}` },
+      }
+    )
+
+    return response.data.data as Invoice[]
+  } catch (error) {
+    console.error('Error fetching invoices by company:', error)
     return null
   }
 }

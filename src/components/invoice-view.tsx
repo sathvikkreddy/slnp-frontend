@@ -38,22 +38,19 @@ export default function InvoiceView({ invoice }: InvoiceViewProps) {
       <Card className="overflow-hidden bg-white p-0">
         <div ref={printRef} className="p-8">
           {/* Company Header */}
-          <div className="border-b border-gray-200 pb-6 text-center">
+          <div className="border-b border-gray-200 pb-2 text-center">
             <h1 className="text-2xl font-bold uppercase">
               SAI LAKSHMI NARASIMHA PACKAGINGS
             </h1>
-            <p className="mt-1 text-sm">
+            <p>
               Survey No. 75, Plot No. 48, Suraram, IDA Jeedimetla, Hyderabad
             </p>
-            <div className="mt-2 text-sm">
-              <p>Email ID: slnpackagings@gmail.com</p>
-              <p>Cell No.: 9000780007</p>
-              <p>GSTIN: 36CVWPK4641J1ZX</p>
-            </div>
+            <p>Email ID: slnpackagings@gmail.com, Cell No.: 9000780007</p>
+            <p>GSTIN: 36CVWPK4641J1ZX</p>
           </div>
 
           {/* Invoice Type */}
-          <div className="mt-4 flex justify-center space-x-8">
+          {/* <div className="mt-2 flex justify-center space-x-8">
             <div className="flex items-center">
               <div className="h-4 w-4 rounded-full border border-black p-0.5">
                 <div className="h-full w-full rounded-full bg-black"></div>
@@ -68,13 +65,11 @@ export default function InvoiceView({ invoice }: InvoiceViewProps) {
               <div className="h-4 w-4 rounded-full border border-black p-0.5"></div>
               <span className="ml-2">Triplicate</span>
             </div>
-          </div>
+          </div> */}
           <p className="mt-1 text-center text-xs">( Under Rule 7 GST )</p>
 
           {/* Invoice Title */}
-          <div className="mt-4 text-center">
-            <h2 className="text-xl font-bold">TAX INVOICE</h2>
-          </div>
+          <h2 className="text-xl font-bold text-center">TAX INVOICE</h2>
 
           {/* Invoice Details */}
           <div className="mt-4 grid grid-cols-2 gap-4">
@@ -86,10 +81,6 @@ export default function InvoiceView({ invoice }: InvoiceViewProps) {
               <p>
                 <span className="font-semibold">State:</span> Telangana
                 <span className="ml-4 font-semibold">Code:</span> 36
-              </p>
-              <p>
-                <span className="font-semibold">E-Way Bill No:</span>{' '}
-                {invoice.eway_bill_number || 'N/A'}
               </p>
               <p>
                 <span className="font-semibold">P.O NO & DATE:</span>{' '}
@@ -105,41 +96,43 @@ export default function InvoiceView({ invoice }: InvoiceViewProps) {
                 <span className="font-semibold">Vehicle No:</span>{' '}
                 {invoice.vehicle_number}
               </p>
+              <p>
+                <span className="font-semibold">E-Way Bill No:</span>{' '}
+                {invoice.eway_bill_number || 'N/A'}
+              </p>
             </div>
           </div>
 
           {/* Company Details */}
-          <div className="mt-6 grid grid-cols-2 gap-8">
+          <div className="mt-2 grid grid-cols-2 gap-8">
             {/* Bill To */}
-            <div className="rounded border border-gray-300 p-3">
-              <p className="font-semibold">Bill to:</p>
-              <p className="font-semibold">{invoice.bill_to_company.name}</p>
-              <p>
-                Address: 5-9-287/49, Rajeev Gandi Nagar,
-                <br />
-                Kukatpally, Hyderabad.
-              </p>
-              <p>GSTIN: {invoice.bill_to_company.gst_number}</p>
-              <p>
-                <span className="font-semibold">State:</span> Telangana
-                <span className="ml-2 font-semibold">Code:</span> 36
-              </p>
+            <div className="rounded border border-gray-300 p-2">
+              <div className="text-lg font-semibold">
+                Bill to: {invoice.bill_to_company.name}
+              </div>
+              <div>{invoice.bill_to_company.address.address_line_1}</div>
+              <div>{invoice.bill_to_company.address.address_line_2}</div>
+              <div>{invoice.bill_to_company.address.address_line_3}</div>
+              <div>GSTIN: {invoice.bill_to_company.gst_number}</div>
+              <div>
+                State: {invoice.bill_to_company.address.state} Code:{' '}
+                {invoice.bill_to_company.address.state_code}{' '}
+              </div>
             </div>
 
             {/* Ship To */}
-            <div className="rounded border border-gray-300 p-3">
-              <p className="font-semibold">Ship To:</p>
-              <p className="font-semibold">{invoice.ship_to_company.name}</p>
-              <p>
-                Address: 5-9-287/49, Rajeev Gandi Nagar,
-                <br />
-                Kukatpally, Hyderabad.
-              </p>
-              <p>GSTIN: {invoice.ship_to_company.gst_number}</p>
-              <p>
-                <span className="font-semibold">State:</span> Telangana
-                <span className="ml-2 font-semibold">Code:</span> 36
-              </p>
+            <div className="rounded border border-gray-300 p-2">
+              <div className="text-lg font-semibold">
+                Ship to: {invoice.ship_to_company.name}
+              </div>
+              <div>{invoice.ship_to_company.address.address_line_1}</div>
+              <div>{invoice.ship_to_company.address.address_line_2}</div>
+              <div>{invoice.ship_to_company.address.address_line_3}</div>
+              <div>GSTIN: {invoice.ship_to_company.gst_number}</div>
+              <div>
+                State: {invoice.ship_to_company.address.state} Code:{' '}
+                {invoice.ship_to_company.address.state_code}{' '}
+              </div>
             </div>
           </div>
 
@@ -274,7 +267,7 @@ export default function InvoiceView({ invoice }: InvoiceViewProps) {
                   <tr>
                     <td className="py-1 text-left">Transport:</td>
                     <td className="py-1 text-right">
-                      {invoice.transport_amount.toFixed(2)}
+                      {invoice.transport_amount?.toFixed(2)}
                     </td>
                   </tr>
                   <tr>
@@ -329,10 +322,6 @@ export default function InvoiceView({ invoice }: InvoiceViewProps) {
                 <div className="mt-12">
                   <p>Authorized Signatory</p>
                 </div>
-                <p className="mt-4 text-xs">
-                  Interest at 24% will be charged on bill if not paid with due
-                  date
-                </p>
               </div>
             </div>
           </div>

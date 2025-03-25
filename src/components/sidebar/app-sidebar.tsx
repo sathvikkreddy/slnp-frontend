@@ -8,7 +8,13 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar'
-import { GalleryVerticalEnd, Home, ScrollText } from 'lucide-react'
+import {
+  ArrowDownLeft,
+  GalleryVerticalEnd,
+  Home,
+  IndianRupee,
+  ScrollText,
+} from 'lucide-react'
 import NavMain from './nav-main'
 import NavUser from './nav-user'
 import { Link } from 'react-router-dom'
@@ -25,6 +31,18 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
       title: 'Invoices',
       url: '/invoices',
       icon: ScrollText,
+      isActive: false,
+    },
+    {
+      title: 'Payments',
+      url: '/payments',
+      icon: IndianRupee,
+      isActive: false,
+    },
+    {
+      title: 'Purchases',
+      url: '/purchases',
+      icon: ArrowDownLeft,
       isActive: false,
     },
   ]

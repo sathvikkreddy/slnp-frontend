@@ -1,4 +1,8 @@
-export type Invoice = {
+export interface StrapiCollection {
+  documentId: string
+}
+
+export interface Invoice extends StrapiCollection {
   id: number
   invoice_number: string
   date: string
@@ -19,11 +23,21 @@ export type Invoice = {
   items: InvoiceItem[]
 }
 
-export type Company = {
+export interface Company extends StrapiCollection {
   id: number
   name: string
   payment_terms: string | null
   gst_number: string
+  address: Address
+}
+
+export type Address = {
+  id: number
+  address_line_1: string
+  address_line_2: string
+  address_line_3: string
+  state: string
+  state_code: number
 }
 
 export type InvoiceItem = {
@@ -37,4 +51,28 @@ export type InvoiceItem = {
   description_line_1: string | null
   description_line_2: string | null
   description_line_3: string | null
+}
+
+export interface Payment extends StrapiCollection {
+  id: number
+  company: Company
+  amount: number
+  payment_method: PaymentMethod
+  received_to?: string
+  invoice?: Invoice
+  date: string
+}
+
+export type PaymentMethod = 'cash' | 'cheque' | 'net-banking' | 'upi' | 'other'
+
+export interface Purchase extends StrapiCollection {
+  id: number
+  date: string
+  invoice_number: string
+  taxable_amount: string
+  cgst_amount: string
+  sgst_amount: string
+  igst_amount: string
+  total_amount: string
+  company: Company
 }

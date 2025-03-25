@@ -21,14 +21,16 @@ const NavMain = ({
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => (
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip={item.title}>
-              <div>
-                {item.icon && <item.icon />}
-                <Link to={item.url}>{item.title}</Link>
-              </div>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          <Link to={item.url}>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip={item.title}>
+                <div>
+                  {item.icon && <item.icon />}
+                  {item.title}
+                </div>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </Link>
         ))}
       </SidebarMenu>
     </SidebarGroup>

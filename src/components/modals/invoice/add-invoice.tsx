@@ -3,7 +3,7 @@ import { useForm, useFieldArray } from 'react-hook-form'
 import { CalendarIcon, Loader2, Plus, Trash2 } from 'lucide-react'
 import { format } from 'date-fns'
 
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -43,16 +43,32 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
-import { Company, InvoiceItem } from '@/types'
+import { Company, Invoice, InvoiceItem } from '@/types'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getCompanies } from '@/api/companies'
 import { createInvoice } from '@/api/invoices'
 import { toast } from 'sonner'
+import { VariantProps } from 'class-variance-authority'
 
 // Units for dropdown
 const units = ['NOS', 'KGS']
 
-export function AddInvoiceDialog() {
+export function AddInvoiceDialog({
+  label,
+  className,
+  existingInvoice,
+  buttonProps,
+  asChild,
+}: {
+  label?: string
+  className?: string
+  existingInvoice?: Invoice
+  buttonProps?: React.ComponentProps<'button'> &
+    VariantProps<typeof buttonVariants> & {
+      asChild?: boolean
+    }
+  asChild?: boolean
+}) {
   const [open, setOpen] = useState(false)
   const { data: companies, isLoading: isCompaniesLoading } = useQuery({
     queryKey: ['companies'],
@@ -77,21 +93,21 @@ export function AddInvoiceDialog() {
     defaultValues: {
       invoice_number: '',
       date: format(new Date(), 'yyyy-MM-dd'),
-      purchase_order: '',
-      total_quantity: 0,
-      total_amount: 0,
-      transport_amount: 0,
-      taxable_amount: 0,
-      sgst_amount: 0,
-      cgst_amount: 0,
-      igst_amount: 0,
-      round_off_amount: 0,
-      invoice_amount: 0,
+      purchase_order: existingInvoice?.purchase_order ?? '',
+      total_quantity: existingInvoice?.total_quantity ?? 0,
+      total_amount: existingInvoice?.total_amount ?? 0,
+      transport_amount: existingInvoice?.transport_amount ?? 0,
+      taxable_amount: existingInvoice?.taxable_amount ?? 0,
+      sgst_amount: existingInvoice?.sgst_amount ?? 0,
+      cgst_amount: existingInvoice?.cgst_amount ?? 0,
+      igst_amount: existingInvoice?.igst_amount ?? 0,
+      round_off_amount: existingInvoice?.round_off_amount ?? 0,
+      invoice_amount: existingInvoice?.invoice_amount ?? 0,
       eway_bill_number: '',
-      vehicle_number: '',
-      bill_to_company: 0,
-      ship_to_company: 0,
-      items: [
+      vehicle_number: existingInvoice?.vehicle_number ?? '',
+      bill_to_company: existingInvoice?.bill_to_company.id ?? 0,
+      ship_to_company: existingInvoice?.ship_to_company.id ?? 0,
+      items: existingInvoice?.items ?? [
         {
           title: 'HDPE PP WOVEN SACKS',
           hsn_code: '39239090',
@@ -108,8 +124,12 @@ export function AddInvoiceDialog() {
   })
 
   const { control, handleSubmit } = form
-  const [billToCompany, setBillToCompany] = useState<Company | null>(null)
-  const [shipToCompany, setShipToCompany] = useState<Company | null>(null)
+  const [billToCompany, setBillToCompany] = useState<Company | null>(
+    existingInvoice?.bill_to_company ?? null
+  )
+  const [shipToCompany, setShipToCompany] = useState<Company | null>(
+    existingInvoice?.ship_to_company ?? null
+  )
   // Field array for invoice items
   const { fields, append, remove } = useFieldArray({
     control,
@@ -195,14 +215,20 @@ export function AddInvoiceDialog() {
 
   const onSubmit = async (data: AddInvoice) => {
     console.log('Form submitted:', data)
-    await createInvoiceMutate(data)
+    await createInvoiceMutate({
+      ...data,
+      invoice_number: `SLNP/${format(getThisFinancialYear().from, 'yyyy')}-
+                        ${format(getThisFinancialYear().to, 'yy')}/${
+        data.invoice_number
+      }`,
+    })
     // Here you would typically send the data to your API
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>Add New Invoice</Button>
+      <DialogTrigger className={cn(className)} asChild={asChild}>
+        <Button {...buttonProps}>{label ?? 'Add New Invoice'}</Button>
       </DialogTrigger>
       <DialogContent className="min-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -229,9 +255,15 @@ export function AddInvoiceDialog() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Invoice Number</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm">
+                        SLNP/{format(getThisFinancialYear().from, 'yyyy')}-
+                        {format(getThisFinancialYear().to, 'yy')}/
+                      </p>
+                      <FormControl>
+                        <Input {...field} className="w-2/5" />
+                      </FormControl>
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -429,7 +461,7 @@ export function AddInvoiceDialog() {
                 name="eway_bill_number"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>E-way Bill Number (Optional)</FormLabel>
+                    <FormLabel>E-way Bill Number</FormLabel>
                     <FormControl>
                       <Input {...field} value={field.value || ''} />
                     </FormControl>
@@ -936,4 +968,17 @@ export type AddInvoice = {
   bill_to_company: number
   ship_to_company: number
   items: AddInvoiceItem[]
+}
+const getThisFinancialYear = () => {
+  const today = new Date()
+  const year = today.getFullYear()
+
+  const isBeforeApril = today.getMonth() < 3 // Jan=0, Feb=1, Mar=2
+  const fromYear = isBeforeApril ? year - 1 : year
+  const toYear = isBeforeApril ? year : year + 1
+
+  return {
+    from: new Date(fromYear, 3, 1), // April 1
+    to: new Date(toYear, 2, 31), // March 31
+  }
 }
